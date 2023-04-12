@@ -1,31 +1,42 @@
-version: '3.1'
-
+version: "3.0"
 services:
-
-  wordpress:
-    image: wordpress
-    restart: always
-    ports:
-      - 8080:80
-    environment:
-      WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_USER: test
-      WORDPRESS_DB_PASSWORD: test
-      WORDPRESS_DB_NAME: test
-    volumes:
-      - ./:/var/www/html
-
   db:
+    platform: linux/x86_64
     image: mysql:5.7
+    #container_name: "mysql57"
+    volumes:
+      - ./docker/mysql:/var/lib/mysql
     restart: always
     environment:
+      MYSQL_ROOT_PASSWORD: test
       MYSQL_DATABASE: test
       MYSQL_USER: test
       MYSQL_PASSWORD: test
-      MYSQL_RANDOM_ROOT_PASSWORD: '1'
-    volumes:
-      - ./docker/db:/var/lib/mysql
 
-volumes:
   wordpress:
-  db:
+    #platform: linux/x86_64
+    image: wordpress:latest
+    #container_name: "wordpress"
+    volumes:
+      - ./:/var/www/html
+      - ./docker/php/php.ini:/usr/local/etc/php/conf.d/php.ini
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - 8888:80
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: test
+      WORDPRESS_DB_USER: test
+      WORDPRESS_DB_PASSWORD: test
+
+  phpmyadmin:
+    platform: linux/x86_64
+    image: phpmyadmin/phpmyadmin:latest
+    #container_name: "phpmyadmin"
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - 4040:80
