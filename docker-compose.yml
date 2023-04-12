@@ -1,6 +1,6 @@
 version: "3.0"
 services:
-  db:
+  db-projectName:
     platform: linux/x86_64
     image: mysql:5.7
     #container_name: "mysql57"
@@ -15,7 +15,7 @@ services:
       MYSQL_USER: test
       MYSQL_PASSWORD: test
 
-  wordpress:
+  wordpress-projectName:
     #platform: linux/x86_64
     image: wordpress:latest
     #container_name: "wordpress"
@@ -24,11 +24,11 @@ services:
       - ./docker/php/php.ini:/usr/local/etc/php/conf.d/php.ini
     restart: always
     depends_on:
-      - db
+      - db-projectName
     ports:
       - 8888:80
     environment:
-      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_HOST: db-projectName:3306
       WORDPRESS_DB_NAME: test
       WORDPRESS_DB_USER: test
       WORDPRESS_DB_PASSWORD: test
@@ -39,6 +39,10 @@ services:
     #container_name: "phpmyadmin"
     restart: always
     depends_on:
-      - db
+      - db-projectName
     ports:
       - 4040:80
+    environment:
+      PMA_HOST: db-projectName
+      PMA_USER: test
+      PMA_PASSWORD: test
